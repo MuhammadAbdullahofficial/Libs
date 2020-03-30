@@ -22,8 +22,9 @@ public:
 	BinaryTree() :root(null), nodes(0) {}
 	BinaryTree(std::initializer_list<t> init) :root(null), nodes(0) { for (t node : init) { this->add(node); } }
 	void operator=(std::initializer_list<t> list) { clear(); for (t node : list) { this->add(node); } }
+	void operator=(BinaryTree& tree) { clear(); merge_internal(tree.root); }
 	void operator+=(std::initializer_list<t> list) { for (t node : list) { this->add(node); } };
-	void operator+=(BinaryTree<t>& tree) {  };
+	void operator+=(BinaryTree<t>& tree) { merge_internal(tree.root); };
 
 
 	void add(t value) {
@@ -101,7 +102,14 @@ private:
 		else return null;
 	}
 
-	
+	void merge_internal(DoubleLinkNode<t>* node) {
+		if (node == null)return;
+		else {
+			merge_internal(node->p_link);
+			this->add(node->data);
+			merge_internal(node->n_link);
+		}
+	}
 
 };
 
