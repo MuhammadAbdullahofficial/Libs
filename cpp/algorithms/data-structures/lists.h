@@ -4,16 +4,18 @@
 #include "nodes.h"
 #include <iostream>
 template<class t>
-__interface List
+class List
 {
-	virtual void add(t value);
-	virtual void remove(t value);
-	virtual void clear();
-	virtual int size()const;
-	virtual t get(unsigned int index)const;
-	virtual int index_of(t value);
-	virtual bool exist(t value)const;
-
+public:
+	
+	virtual void add(t value) = 0;
+	virtual void remove(t value) = 0;
+	virtual void clear() = 0;
+	virtual int size()const = 0;
+	virtual t get(unsigned int index)const = 0;
+	virtual int index_of(t value) = 0;
+	virtual bool exist(t value)const = 0;
+	virtual ~List() {};
 };
 
 template<class t>
@@ -189,7 +191,7 @@ public:
 
 	void add(t value) {
 		if (head == null) { tail = head = new DoubleLinkNode<t>(value); }
-		else { tail->n_link = new DoubleLinkNode<t>(value, tail, null); }
+		else { auto node = new DoubleLinkNode<t>(value, tail, null); tail->n_link = node; tail = node; }
 		nodes += 1;
 	}
 
@@ -228,11 +230,11 @@ public:
 
 	void clear() {
 		DoubleLinkNode<t>* node = head;
-		while (head != null)
+		while (node != null)
 		{
-			node = node->n_link;
-			delete head;
-			head = node;
+			head = node->n_link;
+			delete node;
+			node = head;
 		}
 		head = tail = null;
 		nodes = 0;
@@ -298,5 +300,54 @@ private:
 		}
 	}
 };
+
+class list
+{
+public:
+	list():head(null), nodes(0){}
+
+	template<class t>
+	void add(t data) {
+		if (head == null) { head = new SingleDataNode<t>(data); }
+		else { SingleLinkNode_g* trav = head; while (trav->link)trav = trav->link; trav->link = new SingleDataNode<t>(data); }
+		nodes += 1;
+	}
+
+	void clear() {
+		SingleLinkNode_g* trav = head;
+		while (trav)
+		{
+			head = trav->link;
+			delete trav;
+			trav = head;
+		}
+		nodes = 0;
+	}
+	template<class t>
+	void get(unsigned int index, t& data_var) {
+		try
+		{
+			if (index >= nodes || index < 0)return;
+			SingleLinkNode_g* trav = head;
+			for (int i = 0; i < index; i++)
+				trav = trav->link;
+			data_var = ((SingleDataNode<t>*)trav)->data;
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "error\n";
+		}
+	}
+	~list()
+	{
+		clear();
+	}
+
+private:
+	SingleLinkNode_g* head;
+	int nodes;
+};
+
+
 
 #endif // !LISTS_F
